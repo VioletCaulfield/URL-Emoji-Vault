@@ -240,8 +240,9 @@ function renderCategoryButtons() {
 
 async function copyEmoji(emoji) {
   try {
-    await navigator.clipboard.writeText(emoji.url);
-
+await navigator.clipboard.writeText(
+  window.emojiVault.normaliseEmojiUrl(emoji.url)
+);
     showStatus(`Copied ${emoji.name}! Paste with Ctrl+V.`);
 
     // Update usage statistics for the Frequently Used section.

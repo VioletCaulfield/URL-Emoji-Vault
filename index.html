@@ -40,6 +40,9 @@
           <p class="muted">Your emojis, ready to copy.</p>
         </div>
 <div class="header-actions">
+  <button class="secondary-button" id="manageCategoriesButton">
+    Manage Categories
+  </button>
   <button class="secondary-button" id="showBulkButton">
     ⇧ Bulk Import
   </button>
@@ -61,6 +64,18 @@
           <option value="name">Name A–Z</option>
           <option value="oldest">Oldest first</option>
         </select>
+      </section>
+
+      <!-- Hidden until the user chooses Manage Categories. -->
+      <section class="form-panel category-manager-panel" id="categoryManagerPanel" hidden>
+        <div class="category-manager-heading">
+          <div>
+            <h3>Manage Categories</h3>
+            <p class="muted small">Rename a category or remove it. Removing a category keeps its emojis and moves them to Uncategorised.</p>
+          </div>
+          <button type="button" class="secondary-button" id="closeCategoryManagerButton">Close</button>
+        </div>
+        <div id="categoryManagerList" class="category-manager-list"></div>
       </section>
 
       <!-- Hidden until the user chooses Add Emoji. -->

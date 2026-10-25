@@ -19,6 +19,8 @@ const statusMessage = document.getElementById("statusMessage");
 const emojiCount = document.getElementById("emojiCount");
 const collectionTitle = document.getElementById("collectionTitle");
 const importFile = document.getElementById("importFile");
+const categoryManagerPanel = document.getElementById("categoryManagerPanel");
+const categoryManagerList = document.getElementById("categoryManagerList");
 
 let db;
 let emojis = [];
@@ -153,6 +155,150 @@ function renderEmojis() {
   }
 }
 
+function getCategoryNames() {
+  return [...new Set(
+    emojis.map(emoji => (emoji.category || "").trim()).filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+}
+
+function renderCategoryManager() {
+  categoryManagerList.replaceChildren();
+  const categories = getCategoryNames();
+
+  if (categories.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "No named categories yet. Create one from an emoji card.";
+    categoryManagerList.append(empty);
+    return;
+  }
+
+  for (const categoryName of categories) {
+    const row = document.createElement("div");
+    row.className = "category-manager-row";
+
+    const details = document.createElement("div");
+    details.className = "category-manager-details";
+    const title = document.createElement("strong");
+    title.textContent = categoryName;
+    const count = emojis.filter(emoji => (emoji.category || "").trim() === categoryName).length;
+    const countText = document.createElement("span");
+    countText.className = "muted small";
+    countText.textContent = `${count} ${count === 1 ? "emoji" : "emojis"}`;
+    details.append(title, countText);
+
+    const actions = document.createElement("div");
+    actions.className = "category-manager-actions";
+    const renameButton = document.createElement("button");
+    renameButton.type = "button";
+    renameButton.className = "secondary-button";
+    renameButton.textContent = "Rename";
+    renameButton.addEventListener("click", () => showRenameEditor(row, categoryName));
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "secondary-button delete-button";
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", () => deleteCategory(categoryName));
+
+    actions.append(renameButton, deleteButton);
+    row.append(details, actions);
+    categoryManagerList.append(row);
+  }
+}
+
+function showRenameEditor(row, oldName) {
+  const editor = document.createElement("form");
+  editor.className = "category-rename-editor";
+  const input = document.createElement("input");
+  input.type = "text";
+  input.maxLength = 40;
+  input.value = oldName;
+  input.setAttribute("aria-label", `New name for ${oldName}`);
+  input.required = true;
+  const save = document.createElement("button");
+  save.type = "submit";
+  save.className = "primary-button";
+  save.textContent = "Save";
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "secondary-button";
+  cancel.textContent = "Cancel";
+  cancel.addEventListener("click", renderCategoryManager);
+  editor.append(input, save, cancel);
+  row.replaceChildren(editor);
+  input.focus();
+  input.select();
+
+  editor.addEventListener("submit", async event => {
+    event.preventDefault();
+    const newName = input.value.trim().slice(0, 40);
+    if (!newName) {
+      showStatus("Category names cannot be empty.", true);
+      input.focus();
+      return;
+    }
+    if (newName.toLowerCase() === "uncategorised") {
+      showStatus("That name is reserved for emojis without a category.", true);
+      input.focus();
+      return;
+    }
+    const duplicate = getCategoryNames().some(name => name.toLowerCase() === newName.toLowerCase() && name !== oldName);
+    if (duplicate) {
+      showStatus("A category with that name already exists.", true);
+      input.focus();
+      return;
+    }
+    save.disabled = true;
+    try {
+      await updateAllCategoryRecords(oldName, newName);
+      await refreshEmojis();
+      renderCategoryManager();
+      showStatus(`Renamed “${oldName}” to “${newName}”.`);
+    } catch (error) {
+      save.disabled = false;
+      showStatus("Couldn't rename category: " + error.message, true);
+    }
+  });
+}
+
+function updateAllCategoryRecords(oldName, newName) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(STORE_NAME, "readwrite");
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.getAll();
+    request.onsuccess = () => {
+      for (const record of request.result) {
+        if ((record.category || "").trim() === oldName) {
+          record.category = newName;
+          store.put(record);
+        }
+      }
+    };
+    request.onerror = () => reject(request.error);
+    transaction.oncomplete = resolve;
+    transaction.onerror = () => reject(transaction.error);
+    transaction.onabort = () => reject(transaction.error || new Error("Category update was cancelled."));
+  });
+}
+
+async function deleteCategory(categoryName) {
+  const count = emojis.filter(emoji => (emoji.category || "").trim() === categoryName).length;
+  const confirmed = window.confirm(
+    `Delete the category “${categoryName}”?\n\n${count} ${count === 1 ? "emoji will" : "emojis will"} be kept and moved to Uncategorised. This cannot be undone.`
+  );
+  if (!confirmed) return;
+
+  try {
+    await updateAllCategoryRecords(categoryName, "");
+    await refreshEmojis();
+    renderCategoryManager();
+    showStatus(`Deleted “${categoryName}”. Its emojis were kept as Uncategorised.`);
+  } catch (error) {
+    showStatus("Couldn't delete category: " + error.message, true);
+  }
+}
+
 function createEmojiCard(emoji) {
   const card = document.createElement("article");
   card.className = "emoji-card";
@@ -183,9 +329,137 @@ function createEmojiCard(emoji) {
 
   const category = document.createElement("p");
   category.className = "emoji-category";
-  category.textContent = emoji.category || "Uncategorised";
+  category.textContent = `Category: ${emoji.category || "Uncategorised"}`;
 
-  info.append(name, category);
+  const categorySelect = document.createElement("select");
+  categorySelect.className = "category-select";
+  categorySelect.setAttribute("aria-label", `Change category for ${emoji.name}`);
+
+  const categoryNames = [...new Set(
+    emojis.map(item => (item.category || "").trim() || "Uncategorised")
+  )].sort((a, b) => a.localeCompare(b));
+
+  if (!categoryNames.includes("Uncategorised")) {
+    categoryNames.push("Uncategorised");
+  }
+
+  for (const categoryName of categoryNames) {
+    const option = document.createElement("option");
+    option.value = categoryName === "Uncategorised" ? "" : categoryName;
+    option.textContent = categoryName;
+    categorySelect.append(option);
+  }
+
+  const newCategoryOption = document.createElement("option");
+  newCategoryOption.value = "__new_category";
+  newCategoryOption.textContent = "+ New category…";
+  categorySelect.append(newCategoryOption);
+  categorySelect.value = (emoji.category || "").trim();
+
+  const newCategoryPanel = document.createElement("div");
+  newCategoryPanel.className = "new-category-panel";
+  newCategoryPanel.hidden = true;
+
+  const newCategoryInput = document.createElement("input");
+  newCategoryInput.type = "text";
+  newCategoryInput.maxLength = 40;
+  newCategoryInput.placeholder = "New category name";
+  newCategoryInput.setAttribute("aria-label", `New category for ${emoji.name}`);
+
+  const saveCategoryButton = document.createElement("button");
+  saveCategoryButton.type = "button";
+  saveCategoryButton.className = "primary-button";
+  saveCategoryButton.textContent = "Save category";
+
+  const cancelCategoryButton = document.createElement("button");
+  cancelCategoryButton.type = "button";
+  cancelCategoryButton.className = "secondary-button";
+  cancelCategoryButton.textContent = "Cancel";
+
+  newCategoryPanel.append(
+    newCategoryInput,
+    saveCategoryButton,
+    cancelCategoryButton
+  );
+
+  function closeNewCategoryPanel() {
+    newCategoryPanel.hidden = true;
+    newCategoryInput.value = "";
+    categorySelect.value = previousSavedCategory();
+  }
+
+  function previousSavedCategory() {
+    return (emoji.category || "").trim();
+  }
+
+  categorySelect.addEventListener("change", () => {
+    if (categorySelect.value === "__new_category") {
+      newCategoryPanel.hidden = false;
+      newCategoryInput.focus();
+      return;
+    }
+
+    newCategoryPanel.hidden = true;
+    saveCategory(categorySelect.value);
+  });
+
+  async function saveCategory(nextCategory) {
+    const previousCategory = (emoji.category || "").trim();
+
+    try {
+      emoji.category = nextCategory;
+      await updateEmoji(emoji);
+      await refreshEmojis();
+      if (!categoryManagerPanel.hidden) renderCategoryManager();
+      showStatus(
+        nextCategory
+          ? `Moved ${emoji.name} to “${nextCategory}”.`
+          : `Moved ${emoji.name} to Uncategorised.`
+      );
+    } catch (error) {
+      emoji.category = previousCategory;
+      categorySelect.value = previousCategory;
+      showStatus("Couldn't update category: " + error.message, true);
+    }
+  }
+
+  saveCategoryButton.addEventListener("click", async () => {
+    const nextCategory = newCategoryInput.value.trim().slice(0, 40);
+
+    if (!nextCategory) {
+      showStatus("Enter a category name first.", true);
+      newCategoryInput.focus();
+      return;
+    }
+
+    saveCategoryButton.disabled = true;
+    try {
+      await saveCategory(nextCategory);
+    } finally {
+      saveCategoryButton.disabled = false;
+      newCategoryPanel.hidden = true;
+      newCategoryInput.value = "";
+    }
+  });
+
+  newCategoryInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveCategoryButton.click();
+    } else if (event.key === "Escape") {
+      newCategoryPanel.hidden = true;
+      newCategoryInput.value = "";
+      categorySelect.value = previousSavedCategory();
+    }
+  });
+
+  cancelCategoryButton.addEventListener("click", () => {
+    newCategoryPanel.hidden = true;
+    newCategoryInput.value = "";
+    categorySelect.value = previousSavedCategory();
+  });
+
+  info.append(name, category, categorySelect, newCategoryPanel);
 
   const favouriteButton = document.createElement("button");
   favouriteButton.className = "icon-button favourite-button";
@@ -221,7 +495,9 @@ function createEmojiCard(emoji) {
 
   copyButton.addEventListener("click", async () => {
     try {
-      await navigator.clipboard.writeText(emoji.url);
+await navigator.clipboard.writeText(
+  window.emojiVault.normaliseEmojiUrl(emoji.url)
+);
       showStatus(`Copied the link for ${emoji.name}!`);
     } catch {
       showStatus(
@@ -402,6 +678,15 @@ importFile.addEventListener("change", async () => {
   } finally {
     importFile.value = "";
   }
+});
+
+document.getElementById("manageCategoriesButton").addEventListener("click", () => {
+  categoryManagerPanel.hidden = !categoryManagerPanel.hidden;
+  if (!categoryManagerPanel.hidden) renderCategoryManager();
+});
+
+document.getElementById("closeCategoryManagerButton").addEventListener("click", () => {
+  categoryManagerPanel.hidden = true;
 });
 
 async function startApp() {
