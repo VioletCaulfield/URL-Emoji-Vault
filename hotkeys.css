@@ -1,0 +1,162 @@
+/* Hotkey settings styling: form fields, buttons, shortcut rows and responsive spacing. */
+
+
+/* Shared colours and other values. Rules below use these variables so a theme can update many elements. */
+:root {
+  color-scheme: dark;
+  --background: #171923;
+  --panel: #222635;
+  --border: #363b4d;
+  --text: #f1f2f8;
+  --muted: #a5aabd;
+  --accent: #7775f7;
+  --danger: #ff7777;
+}
+
+/* Include padding and borders inside element sizes to make layouts easier to calculate. */
+* {
+  box-sizing: border-box;
+}
+
+/* Default page appearance; more specific selectors can override these settings. */
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font: 14px "Segoe UI", Arial, sans-serif;
+}
+
+.settings {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 25px;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+header p,
+.hint {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.panel {
+  padding: 20px;
+  margin-top: 22px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+label {
+  display: block;
+  margin: 15px 0 8px;
+  font-weight: 600;
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--text);
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+input.recording {
+  border-color: var(--accent);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+button {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #2b3040;
+  color: var(--text);
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.15);
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: transparent;
+}
+
+button.delete {
+  color: var(--danger);
+}
+
+#status {
+  min-height: 20px;
+  margin-bottom: 0;
+  color: #8ce4b7;
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.shortcut-row:last-child {
+  border-bottom: 0;
+}
+
+.shortcut-info {
+  min-width: 0;
+}
+
+.shortcut-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.shortcut-keys {
+  margin-top: 5px;
+  color: var(--muted);
+}
+
+/* Keep the settings page usable at narrow widths. */
+@media (max-width: 500px) {
+  .settings {
+    padding: 16px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+}

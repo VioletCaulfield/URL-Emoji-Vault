@@ -1,0 +1,52 @@
+{
+  "name": "emoji-vault",
+  "productName": "Emoji Vault",
+  "version": "1.0.0",
+  "description": "A local emoji library and URL-based emoji picker",
+  "main": "main.js",
+  "author": "Violet Caulfield",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build:portable": "electron-builder --win portable",
+    "build:dir": "electron-builder --win dir"
+  },
+  "build": {
+    "appId": "com.violetcaulfield.emojivault",
+    "productName": "Emoji Vault",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "style.css",
+      "app.js",
+      "picker.html",
+      "picker.css",
+      "picker.js",
+      "preload.js",
+      "hotkeys.html",
+      "hotkeys.css",
+      "hotkeys.js",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "icon": "assets/app.ico",
+      "executableName": "Emoji Vault",
+      "target": [
+        "portable",
+        "dir"
+      ]
+    },
+    "portable": {
+      "artifactName": "Emoji-Vault-Portable-${version}.${ext}"
+    },
+    "asar": true
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.0.12"
+  }
+}

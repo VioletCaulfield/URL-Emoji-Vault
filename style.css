@@ -1,0 +1,604 @@
+/* Full-size manager styling. The main page uses a sidebar and a content area.
+   Theme variables can be updated by the Electron main process. */
+
+
+/* Shared colours and other values. Rules below use these variables so a theme can update many elements. */
+:root {
+  color-scheme: dark;
+  --background: rgba(26, 17, 38, 0.92);
+  --panel: rgba(40, 27, 56, 0.92);
+  --panel-light: rgba(57, 36, 78, 0.92);
+  --border: rgba(76, 49, 100, 0.98);
+  --panel-opacity: 0.92;
+  --text: #f1f2f8;
+  --muted: #a5aabd;
+  --accent: #7775f7;
+  --accent-hover: #9290ff;
+  --danger: #ff7777;
+}
+
+/* Include padding and borders inside element sizes to make layouts easier to calculate. */
+* {
+  box-sizing: border-box;
+}
+
+/* Default page appearance; more specific selectors can override these settings. */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text);
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 15px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent-hover);
+  outline-offset: 3px;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 18px;
+  background: var(--background);
+  border-right: 1px solid var(--border);
+}
+
+.brand {
+  font-size: 22px;
+  margin: 0 0 6px;
+}
+
+.muted {
+  color: var(--muted);
+  margin: 6px 0;
+  line-height: 1.5;
+}
+
+.sidebar nav {
+  display: grid;
+  gap: 8px;
+  margin-top: 36px;
+}
+
+.nav-button,
+.primary-button,
+.secondary-button {
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 11px 14px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.nav-button {
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+}
+
+.nav-button:hover,
+.nav-button.active {
+  background: color-mix(in srgb, var(--accent) 30%, var(--background));
+  color: white;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding-top: 32px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #67d9a0;
+  margin-right: 6px;
+}
+
+.main {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 36px;
+  min-width: 0;
+}
+
+.topbar,
+.toolbar,
+.collection-heading,
+.form-actions,
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topbar {
+  margin-bottom: 26px;
+}
+
+h2 {
+  font-size: 28px;
+  margin: 0;
+}
+
+h3 {
+  margin-top: 0;
+}
+
+.primary-button {
+  background: var(--accent);
+  color: white;
+}
+
+.primary-button:hover {
+  background: var(--accent-hover);
+}
+
+.secondary-button {
+  background: var(--panel-light);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.secondary-button:hover {
+  background: var(--panel);
+}
+
+.toolbar {
+  margin-bottom: 28px;
+}
+
+input,
+select {
+  min-width: 0;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px;
+}
+
+#searchInput {
+  flex: 1;
+}
+
+.form-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 28px;
+}
+
+.form-panel form {
+  display: grid;
+  gap: 10px;
+}
+
+.form-panel label {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.form-actions {
+  justify-content: flex-start;
+  margin-top: 10px;
+}
+
+.small {
+  font-size: 12px;
+}
+
+.collection-heading {
+  margin-bottom: 18px;
+}
+
+.collection-heading h3 {
+  margin: 0;
+}
+
+.count {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+  gap: 16px;
+}
+
+.emoji-card {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+}
+
+.emoji-preview {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--background);
+  border-radius: 10px;
+  font-size: 32px;
+}
+
+.emoji-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.emoji-info {
+  min-width: 0;
+  padding-top: 3px;
+}
+
+.emoji-name {
+  margin: 0 0 7px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.emoji-category {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0 0 12px;
+  overflow-wrap: anywhere;
+}
+
+.emoji-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  grid-column: 1 / -1;
+}
+
+.emoji-actions button {
+  flex: 1;
+  padding: 8px 9px;
+  font-size: 12px;
+}
+
+.icon-button {
+  border: none;
+  border-radius: 7px;
+  padding: 5px 9px;
+  color: var(--muted);
+  background: var(--panel-light);
+}
+
+.favourite-button {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+}
+
+.favourite-button.is-favourite {
+  color: #ff91bb;
+}
+
+.delete-button {
+  color: var(--danger);
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  padding: 36px 12px;
+  text-align: center;
+  background: var(--panel);
+  border: 1px dashed var(--border);
+  border-radius: 13px;
+}
+
+.status-message {
+  min-height: 24px;
+  margin-top: 18px;
+  color: #8ce4b7;
+}
+
+.status-message.error {
+  color: var(--danger);
+}
+
+.footer {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Adjust the layout when the window becomes narrow. */
+@media (max-width: 760px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    padding: 18px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar nav {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+
+  .sidebar-bottom {
+    margin-top: 16px;
+    padding-top: 0;
+  }
+
+  .main {
+    padding: 22px 16px;
+  }
+
+  .topbar {
+    align-items: flex-start;
+  }
+
+  h2 {
+    font-size: 23px;
+  }
+
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .emoji-grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.form-panel textarea {
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+  background: var(--background);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px;
+  font: inherit;
+  line-height: 1.5;
+}
+
+.form-panel textarea:focus-visible {
+  outline: 2px solid var(--accent-hover);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .header-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+
+/* ===== EMOJI VAULT LAYOUT FIX ===== */
+
+.app {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.main {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  padding: 32px;
+  overflow-x: hidden;
+}
+
+.topbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.topbar > div:first-child {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.header-actions {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 170px;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+#searchInput {
+  width: 100%;
+  min-width: 0;
+}
+
+#sortSelect {
+  width: 100%;
+}
+
+.collection-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  align-items: start;
+  gap: 16px;
+  width: 100%;
+}
+
+.emoji-card {
+  width: 100%;
+  min-width: 0;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+/* Responsive layout changes for medium-sized windows. */
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 190px minmax(0, 1fr);
+  }
+
+  .main {
+    padding: 22px;
+  }
+
+  .topbar {
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+
+  .toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Extra adjustments for small windows. */
+@media (max-width: 600px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    padding: 18px;
+  }
+
+  .main {
+    padding: 18px 14px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .emoji-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* Shared polished controls; theme variables can be updated by the manager UI. */
+button,
+input,
+select,
+textarea {
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+.form-panel,
+.emoji-card {
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.10);
+}
+
+
+/* Shared appearance preferences: colours are updated by the Electron main process. */
+:root { --panel-opacity: 0.92; }
+.sidebar, .form-panel, .emoji-card, .empty-state, input, select, .secondary-button {
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.nav-button.active { background: color-mix(in srgb, var(--accent) 30%, var(--background)); }
+.primary-button { background: var(--accent); }
+.primary-button:hover { background: var(--accent-hover); }
+
+
+/* The manager shares the picker's saved theme and opacity preferences. */
+.app { background: var(--background); min-height: 100vh; }
+.sidebar, .form-panel, .emoji-card, .empty-state, input, select, textarea, .secondary-button {
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.nav-button.active { background: color-mix(in srgb, var(--accent) 30%, var(--background)); }
+.primary-button { background: var(--accent); }
+.primary-button:hover { background: var(--accent-hover); }

@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<!-- Hotkey settings structure. hotkeys.js uses these element IDs to read input and show saved shortcuts. -->
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emoji Vault Hotkeys</title>
+  <link rel="stylesheet" href="hotkeys.css">
+  <script src="hotkeys.js" defer></script>
+</head>
+<body>
+  <main class="settings">
+    <header>
+      <div>
+        <h1>⌨ Hotkey Settings</h1>
+        <p>Assign keyboard shortcuts to your favourite emojis.</p>
+      </div>
+    </header>
+
+    <!-- Form for choosing an emoji and recording a shortcut. -->
+    <!-- List of shortcuts already saved. -->
+    <section class="panel">
+      <label for="emojiSelect">Choose an emoji</label>
+      <select id="emojiSelect">
+        <option value="">Loading emojis...</option>
+      </select>
+
+      <label for="shortcutInput">Keyboard shortcut</label>
+      <input
+        id="shortcutInput"
+        type="text"
+        placeholder="Click here, then press a shortcut"
+        readonly
+      >
+
+      <p class="hint">
+        Suggested format: Ctrl + Alt + 1. Choose a shortcut that
+        isn't already used by another application.
+      </p>
+
+      <div class="actions">
+        <button id="saveButton" class="primary">Save Shortcut</button>
+        <button id="clearInputButton">Clear Input</button>
+      </div>
+
+      <p id="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel">
+      <h2>Assigned shortcuts</h2>
+      <div id="shortcutList">
+        <p class="hint">Loading shortcuts...</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

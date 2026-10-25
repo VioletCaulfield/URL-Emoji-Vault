@@ -1,0 +1,302 @@
+/* Compact tray picker styling. The variables at the top control colours and opacity.
+   The native window is transparent; the .picker element draws the visible panel. */
+
+
+/* Shared colours and other values. Rules below use these variables so a theme can update many elements. */
+:root {
+  color-scheme: dark;
+  --background: #171923;
+  --panel: #222635;
+  --panel-hover: #343a50;
+  --border: #363b4d;
+  --text: #f1f2f8;
+  --muted: #a5aabd;
+  --accent: #7775f7;
+  --accent-hover: #9290ff;
+  --panel-opacity: 0.92;
+  --window-bg: rgba(23, 25, 35, var(--panel-opacity));
+  --panel-bg: rgba(34, 38, 53, var(--panel-opacity));
+  --hover-bg: rgba(52, 58, 80, var(--panel-opacity));
+}
+
+/* Include padding and borders inside element sizes to make layouts easier to calculate. */
+* {
+  box-sizing: border-box;
+}
+
+/* Default page appearance; more specific selectors can override these settings. */
+body {
+  margin: 0;
+  background: transparent;
+  color: var(--text);
+  font: 13px "Segoe UI", Arial, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-align: center;
+}
+
+button:hover {
+  background: var(--hover-bg);
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.picker {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  gap: 12px;
+}
+
+.picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.picker-header h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.picker-header p {
+  margin: 5px 0 0;
+  color: var(--muted);
+}
+
+#manageButton,
+#appearanceButton,
+#refreshButton {
+  position: relative;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Use the actual refresh character instead of drawing a crooked icon in CSS. */
+#refreshButton::before,
+#refreshButton::after {
+  content: none;
+}
+
+#searchInput {
+  width: 100%;
+  min-width: 0;
+  padding: 11px;
+  color: var(--text);
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+#categoryNav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 3px;
+  scrollbar-width: thin;
+}
+
+.category-button {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+.category-button.active {
+  background: #393761;
+  border-color: var(--accent);
+}
+
+#emojiSections {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #555a70 transparent;
+  padding-right: 3px;
+}
+
+.category-section {
+  margin-bottom: 18px;
+}
+
+.category-title {
+  position: sticky;
+  top: 0;
+  margin: 0 0 9px;
+  padding: 7px 2px;
+  background: var(--window-bg);
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.emoji-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  aspect-ratio: 1;
+  padding: 5px;
+  overflow: hidden;
+  background: var(--panel-bg);
+  border-radius: 8px;
+}
+
+.emoji-tile:hover {
+  border-color: var(--accent);
+  background: var(--hover-bg);
+}
+
+.emoji-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  padding: 30px 12px;
+}
+
+.picker-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.picker-footer button {
+  padding: 8px 10px;
+}
+
+#statusMessage {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+@media (max-width: 300px) {
+  .emoji-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+
+/* Appearance controls and polished popup surface. */
+body {
+  background: transparent;
+}
+
+.picker {
+  background: var(--window-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
+}
+
+.appearance-panel {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel-bg);
+}
+
+.appearance-panel[hidden] {
+  display: none;
+}
+
+.settings-heading,
+.opacity-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.appearance-panel label,
+.opacity-heading output {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.appearance-panel select {
+  width: 100%;
+  padding: 8px 10px;
+  color: var(--text);
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+}
+
+#opacityRange {
+  width: 100%;
+  accent-color: var(--accent);
+  padding: 0;
+}
+
+.icon-button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 20px;
+}
+
+.category-button.active {
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  border-color: var(--accent);
+}
+
+.emoji-tile {
+  background: var(--panel-bg);
+}
+
+.emoji-tile:hover {
+  background: var(--hover-bg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  button {
+    transition: background-color 120ms ease, border-color 120ms ease;
+  }
+}

@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<!-- Full manager structure. HTML provides the elements, style.css styles them, and app.js makes them work. -->
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Above is the type, characterset and window sizing.
+    Below is the basic web layout, including the elements and key titles and subheadings.
+  -->
+  <meta name="theme-color" content="#171923">
+  <title>Emoji Vault</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <!-- Navigation and the note that the collection is stored locally. -->
+    <aside class="sidebar">
+      <h1 class="brand">The Emoji Vault</h1>
+      <p class="muted">Store your emojis locally!</p>
+
+      <nav>
+        <button class="nav-button active" id="allButton">▦ All Emojis</button>
+        <button class="nav-button" id="favouritesButton">♥ Favourites</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <span class="status-dot"></span>
+        Stored locally on your device.
+      </div>
+    </aside>
+
+    <!-- Main content: toolbar, forms, collection and backup controls. -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2>My Emojis</h2>
+          <p class="muted">Your emojis, ready to copy.</p>
+        </div>
+<div class="header-actions">
+  <button class="secondary-button" id="showBulkButton">
+    ⇧ Bulk Import
+  </button>
+  <button class="primary-button" id="showAddButton">
+    + Add Emoji
+  </button>
+</div>
+
+
+      <section class="toolbar">
+        <input
+          type="search"
+          id="searchInput"
+          placeholder="Search your emojis..."
+          aria-label="Search emojis"
+        >
+        <select id="sortSelect" aria-label="Sort emojis">
+          <option value="newest">Newest first</option>
+          <option value="name">Name A–Z</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+      </section>
+
+      <!-- Hidden until the user chooses Add Emoji. -->
+      <section class="form-panel" id="addPanel" hidden>
+        <h3>Add an emoji</h3>
+        <form id="emojiForm">
+          <label for="emojiName">Name</label>
+          <input
+            id="emojiName"
+            name="emojiName"
+            placeholder="e.g. happycat"
+            maxlength="60"
+            required
+          >
+
+          <label for="emojiUrl">Direct image URL</label>
+          <input
+            id="emojiUrl"
+            name="emojiUrl"
+            type="url"
+            placeholder="https://example.com/emoji.png"
+            required
+          >
+
+          <label for="emojiCategory">Category (optional)</label>
+          <input
+            id="emojiCategory"
+            name="emojiCategory"
+            placeholder="e.g. Cats, Reactions, Hearts"
+            maxlength="40"
+          >
+
+          <div class="form-actions">
+            <button type="submit" class="primary-button">
+              Save Emoji
+            </button>
+            <button type="button" class="secondary-button" id="cancelButton">
+              Cancel
+            </button>
+          </div>
+          <p class="muted small">
+            Use a direct image link. The original image remains hosted
+            at its source.
+          </p>
+        </form>
+      </section>
+
+      
+<!-- Hidden until the user chooses Bulk Import. -->
+<section class="form-panel" id="bulkPanel" hidden>
+  <h3>Bulk Import Emojis</h3>
+  <p class="muted">
+    Paste one image URL per line. You can optionally give each emoji a name.
+  </p>
+
+  <form id="bulkForm">
+    <label for="bulkUrls">Emoji URLs</label>
+    <textarea
+      id="bulkUrls"
+      rows="7"
+      placeholder="https://example.com/cat.png&#10;https://example.com/heart.gif"
+      required
+    ></textarea>
+
+    <label for="bulkNames">Names (optional, one per line)</label>
+    <textarea
+      id="bulkNames"
+      rows="4"
+      placeholder="happycat&#10;pinkheart"
+    ></textarea>
+
+    <label for="bulkCategory">Category for all imported emojis</label>
+    <input
+      id="bulkCategory"
+      maxlength="40"
+      placeholder="e.g. Reactions"
+    >
+
+    <div class="form-actions">
+      <button type="submit" class="primary-button">
+        Import Emojis
+      </button>
+      <button type="button" class="secondary-button" id="cancelBulkButton">
+        Cancel
+      </button>
+    </div>
+  </form>
+</section>
+
+
+      <div class="collection-heading">
+        <h3 id="collectionTitle">All Emojis</h3>
+        <span id="emojiCount" class="count">0 emojis</span>
+      </div>
+
+      <section id="emojiGrid" class="emoji-grid" aria-live="polite">
+        <p class="empty-state">Loading your collection...</p>
+      </section>
+
+      <p id="statusMessage" class="status-message" role="status"></p>
+
+      <!-- Backup buttons export or import the collection as JSON. -->
+      <footer class="footer">
+        <button class="secondary-button" id="exportButton">
+          Export Backup
+        </button>
+        <button class="secondary-button" id="importButton">
+          Import Backup
+        </button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

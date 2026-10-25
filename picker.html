@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<!-- Compact picker structure. The IDs are used by picker.js to find and update controls. -->
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emoji Picker</title>
+  <link rel="stylesheet" href="picker.css">
+  <script src="picker.js" defer></script>
+</head>
+<body>
+  <main class="picker">
+    <!-- App title and the two header buttons. -->
+    <header class="picker-header">
+      <div>
+        <h1>Emoji Vault</h1>
+        <p>Choose an emoji to copy its link.</p>
+      </div>
+      <div class="header-actions">
+        <button id="appearanceButton" title="Appearance settings" aria-label="Appearance settings">☼</button>
+        <button id="manageButton" title="Open full Emoji Vault manager"
+          aria-label="Manage emojis">⚙</button>
+      </div>
+    </header>
+
+    <!-- Theme and opacity controls; picker.js saves their choices. -->
+    <section id="appearancePanel" class="appearance-panel" hidden aria-label="Appearance settings">
+      <div class="settings-heading">
+        <strong>Appearance</strong>
+        <button id="closeAppearanceButton" class="icon-button" aria-label="Close appearance settings">×</button>
+      </div>
+      <label for="themeSelect">Colour theme</label>
+      <select id="themeSelect">
+        <option value="violet">Violet</option>
+        <option value="ocean">Ocean blue</option>
+        <option value="mint">Mint</option>
+        <option value="rose">Rose</option>
+        <option value="amber">Amber</option>
+      </select>
+      <div class="opacity-heading">
+        <label for="opacityRange">Panel opacity</label>
+        <output id="opacityValue" for="opacityRange">92%</output>
+      </div>
+      <input id="opacityRange" type="range" min="65" max="100" step="1" value="92">
+    </section>
+
+    <input
+      id="searchInput"
+      type="search"
+      placeholder="Search emojis..."
+      aria-label="Search emojis"
+      autocomplete="off"
+    >
+
+    <!-- JavaScript adds category buttons based on the saved emoji collection. -->
+    <nav id="categoryNav" aria-label="Emoji categories">
+      <button class="category-button active" data-category="__all">
+        All
+      </button>
+      <button class="category-button" data-category="__favourites">
+        ♥ Favourites
+      </button>
+    </nav>
+
+    <!-- JavaScript creates emoji groups and tiles inside this section. -->
+    <section id="emojiSections" aria-live="polite">
+      <p class="empty-state">Loading your emojis...</p>
+    </section>
+
+    <footer class="picker-footer">
+      <button id="hotkeysButton">⌨ Hotkeys</button>
+      <span id="statusMessage" role="status">Ready</span>
+      <button id="refreshButton" title="Refresh emojis" aria-label="Refresh emojis">⟳</button>
+    </footer>
+  </main>
+</body>
+</html>
